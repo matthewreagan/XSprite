@@ -63,7 +63,7 @@ extension SKNode {
     
     // MARK: - Computed positioning
     
-    var onShouldComputeDefaultPositionForSceneSize: NodePositioningBlock? {
+    var computedDefaultPositionForSceneSize: NodePositioningBlock? {
         get {
             return objc_getAssociatedObject(self, &AssociatedObjectKeys.computedDefaultPositionForSceneSize) as? NodePositioningBlock
         }

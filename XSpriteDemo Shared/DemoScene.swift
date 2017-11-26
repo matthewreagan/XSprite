@@ -26,7 +26,7 @@ class DemoScene: GameScene {
         super.setUpScene()
         
         centerSquare.alpha = 0.5
-        centerSquare.onShouldComputeDefaultPositionForSceneSize = {
+        centerSquare.computedDefaultPositionForSceneSize = {
             size in
             return CGPoint.init(x: size.width / 2.0, y: size.height / 2.0)
         }
@@ -46,7 +46,7 @@ class DemoScene: GameScene {
         infoLabel.position = CGPoint(x: 20.0, y: 10.0)
         infoLabel.text = "Try clicking the bubble or potion to see relationship between parent/child click actions"
         
-        bubbleNode.onShouldComputeDefaultPositionForSceneSize = {
+        bubbleNode.computedDefaultPositionForSceneSize = {
             size in
             return bubbleStart
         }

@@ -24,7 +24,7 @@ class GameScene: SKScene {
         
         while childrenToReposition.count > 0 {
             let child = childrenToReposition.popLast()!
-            if let computedDefaultPositionBlock = child.onShouldComputeDefaultPositionForSceneSize {
+            if let computedDefaultPositionBlock = child.computedDefaultPositionForSceneSize {
                 child.position = computedDefaultPositionBlock(newSceneSize)
             }
             
