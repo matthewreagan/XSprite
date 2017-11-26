@@ -6,6 +6,7 @@ How this project differs from the default Xcode template:
 
 - Preconfigured for Swift + SpriteKit
 - Built-in hooks for easier iOS device rotation handling or macOS window / screen resizing
+- Adds optional action blocks on `SKNode` for automatic handling of basic mouse or touch actions
 - Changes default GameScene and other classes to work slightly better for programmatic configuration
 - Removes Storyboards, adds MainMenu.xib for macOS
 - Removes ignoresSiblingOrder override
