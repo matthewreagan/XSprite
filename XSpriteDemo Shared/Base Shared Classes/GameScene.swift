@@ -18,14 +18,6 @@ class GameScene: SKScene {
         self.setUpScene()
     }
     
-    override func update(_ currentTime: TimeInterval) {
-        // Called before each frame is rendered
-    }
-    
-    override func didChangeSize(_ oldSize: CGSize) {
-        super.didChangeSize(oldSize)
-    }
-    
     // MARK: - Shared cross-platform click handling
     
     func handleClickDown(at location: CGPoint) -> Bool {
