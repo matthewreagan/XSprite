@@ -8,6 +8,10 @@
 
 import SpriteKit
 
+var xDirection: CGFloat = 3.0
+var yDirection: CGFloat = 3.0
+let bubbleStart = CGPoint(x: 128, y: 128)
+
 class DemoScene: GameScene {
     
     let bubbleNode = SKSpriteNode.init(imageNamed: "bubbleIcon")
@@ -15,9 +19,6 @@ class DemoScene: GameScene {
     let centerSquare = SKSpriteNode.init(color: SKColor.red, size: .init(width: 32.0, height: 32.0))
     let demoLabel = SKLabelNode()
     let infoLabel = SKLabelNode()
-    var xDirection: CGFloat = 3.0
-    var yDirection: CGFloat = 3.0
-    let bubbleStart = CGPoint(x: 128, y: 128)
     
     // MARK: - Setup
     
@@ -45,7 +46,10 @@ class DemoScene: GameScene {
         infoLabel.position = CGPoint(x: 20.0, y: 10.0)
         infoLabel.text = "Try clicking the bubble or potion to see relationship between parent/child click actions"
         
-        bubbleNode.position = bubbleStart
+        bubbleNode.onShouldComputeDefaultPositionForSceneSize = {
+            size in
+            return bubbleStart
+        }
         
         potionNode.size = .init(width: 64.0, height: 64.0)
         potionNode.texture?.filteringMode = .nearest
@@ -127,8 +131,6 @@ class DemoScene: GameScene {
     
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
-        
-        bubbleNode.position = bubbleStart
         demoLabel.text = "Scene size: \(Int(self.size.width)), \(Int(self.size.height))"
     }
 }
