@@ -32,6 +32,12 @@ class DemoScene: GameScene {
         demoNode.size = .init(width: 64.0, height: 64.0)
         demoNode.texture?.filteringMode = .nearest
         demoNode.run(.repeatForever(.rotate(byAngle: 2 * CGFloat.pi, duration: 3.0)))
+        
+        demoNode.onClickDown = {
+            let spinnyAction = SKAction.rotate(byAngle: 2 * CGFloat.pi * 2, duration: 0.35)
+            spinnyAction.timingMode = .easeInEaseOut
+            $0.run(spinnyAction)
+        }
     }
     
     // MARK: - Logic

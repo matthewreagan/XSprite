@@ -27,27 +27,51 @@ class GameScene: SKScene {
     }
 }
 
+extension GameScene {
+    // Shared cross-platform click handling
+    
+    func handleClickDown(at location: CGPoint) {
+        for aNode in nodes(at: location) {
+            if let clickDownActionBlock = aNode.onClickDown {
+                clickDownActionBlock(aNode)
+            }
+        }
+    }
+    
+    func handleClickUp(at location: CGPoint) {
+        for aNode in nodes(at: location) {
+            if let clickUpActionBlock = aNode.onClickUp {
+                clickUpActionBlock(aNode)
+            }
+        }
+    }
+}
+
 #if os(iOS)
     // Touch-based event handling
     extension GameScene {
         
         override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-            for t in touches {
+            for touch in touches {
+                let touchLocation = touch.location(in: self)
+                handleClickDown(at: touchLocation)
             }
         }
         
         override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-            for t in touches {
-            }
         }
         
         override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-            for t in touches {
+            for touch in touches {
+                let touchLocation = touch.location(in: self)
+                handleClickUp(at: touchLocation)
             }
         }
         
         override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-            for t in touches {
+            for touch in touches {
+                let touchLocation = touch.location(in: self)
+                handleClickUp(at: touchLocation)
             }
         }
     }
@@ -56,12 +80,16 @@ class GameScene: SKScene {
     extension GameScene {
         
         override func mouseDown(with event: NSEvent) {
+            let touchLocation = touch.location(in: self)
+            handleClickDown(at: touchLocation)
         }
         
         override func mouseDragged(with event: NSEvent) {
         }
         
         override func mouseUp(with event: NSEvent) {
+            let touchLocation = touch.location(in: self)
+            handleClickUp(at: touchLocation)
         }
     }
 #endif

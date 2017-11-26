@@ -18,6 +18,8 @@
 		C9D03AA11FB90F2F0075000E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C9D03AA01FB90F2F0075000E /* MainMenu.xib */; };
 		C9D03AA41FCA28030075000E /* DemoScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D03AA31FCA28030075000E /* DemoScene.swift */; };
 		C9D03AA51FCA28030075000E /* DemoScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D03AA31FCA28030075000E /* DemoScene.swift */; };
+		C9D03AA81FCA51520075000E /* SKNode+XSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D03AA71FCA51520075000E /* SKNode+XSprite.swift */; };
+		C9D03AA91FCA51520075000E /* SKNode+XSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9D03AA71FCA51520075000E /* SKNode+XSprite.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,7 @@
 		C9D03AA01FB90F2F0075000E /* MainMenu.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MainMenu.xib; sourceTree = "<group>"; };
 		C9D03AA21FB929A60075000E /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		C9D03AA31FCA28030075000E /* DemoScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoScene.swift; sourceTree = "<group>"; };
+		C9D03AA71FCA51520075000E /* SKNode+XSprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SKNode+XSprite.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				C9D03AA21FB929A60075000E /* README.md */,
+				C9D03A6E1FB90E6C0075000E /* Assets.xcassets */,
 				C9D03A6A1FB90E6C0075000E /* XSpriteDemo Shared */,
 				C9D03A751FB90E6C0075000E /* XSpriteDemo iOS */,
 				C9D03A861FB90E6C0075000E /* XSpriteDemo macOS */,
@@ -69,8 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				C9D03AA31FCA28030075000E /* DemoScene.swift */,
-				C9D03A6D1FB90E6C0075000E /* GameScene.swift */,
-				C9D03A6E1FB90E6C0075000E /* Assets.xcassets */,
+				C9D03AA61FCA511E0075000E /* Base Shared Classes */,
 			);
 			path = "XSpriteDemo Shared";
 			sourceTree = "<group>";
@@ -103,6 +106,15 @@
 				C9D03AA01FB90F2F0075000E /* MainMenu.xib */,
 			);
 			path = "XSpriteDemo macOS";
+			sourceTree = "<group>";
+		};
+		C9D03AA61FCA511E0075000E /* Base Shared Classes */ = {
+			isa = PBXGroup;
+			children = (
+				C9D03A6D1FB90E6C0075000E /* GameScene.swift */,
+				C9D03AA71FCA51520075000E /* SKNode+XSprite.swift */,
+			);
+			path = "Base Shared Classes";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -206,6 +218,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9D03AA81FCA51520075000E /* SKNode+XSprite.swift in Sources */,
 				C9D03A931FB90E6C0075000E /* GameScene.swift in Sources */,
 				C9D03AA41FCA28030075000E /* DemoScene.swift in Sources */,
 				C9D03A791FB90E6C0075000E /* GameViewController.swift in Sources */,
@@ -217,6 +230,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C9D03AA91FCA51520075000E /* SKNode+XSprite.swift in Sources */,
 				C9D03A941FB90E6C0075000E /* GameScene.swift in Sources */,
 				C9D03AA51FCA28030075000E /* DemoScene.swift in Sources */,
 				C9D03A8A1FB90E6C0075000E /* GameViewController.swift in Sources */,
