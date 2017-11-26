@@ -54,10 +54,8 @@ class DemoScene: GameScene {
             $0.run(zoomAction)
         }
         
-        addChild(bubbleNode)
         bubbleNode.addChild(potionNode)
-        addChild(demoLabel)
-        addChild(infoLabel)
+        addChildren([bubbleNode, demoLabel, infoLabel])
     }
     
     // MARK: - Click overrides
