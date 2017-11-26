@@ -80,7 +80,7 @@ extension GameScene {
     extension GameScene {
         
         override func mouseDown(with event: NSEvent) {
-            let touchLocation = touch.location(in: self)
+            let touchLocation = event.location(in: self)
             handleClickDown(at: touchLocation)
         }
         
@@ -88,7 +88,7 @@ extension GameScene {
         }
         
         override func mouseUp(with event: NSEvent) {
-            let touchLocation = touch.location(in: self)
+            let touchLocation = event.location(in: self)
             handleClickUp(at: touchLocation)
         }
     }
