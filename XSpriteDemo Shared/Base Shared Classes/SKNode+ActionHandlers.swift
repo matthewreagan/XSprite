@@ -9,14 +9,19 @@
 import SpriteKit
 
 typealias NodeActionBlock = (SKNode) -> Void
+typealias NodePositioningBlock = (CGSize) -> CGPoint
 
 struct AssociatedObjectKeys {
     static var onClickDown: UInt8 = 0
     static var onClickUp: UInt8 = 0
     static var onClickDragged: UInt8 = 0
+    static var computedDefaultPositionForSceneSize: UInt8 = 0
 }
 
 extension SKNode {
+    
+    // MARK: - Click handlers
+    
     var onClickDown: NodeActionBlock? {
         get {
             return getAssociatedActionBlock(forKey: &AssociatedObjectKeys.onClickDown)
@@ -56,7 +61,34 @@ extension SKNode {
         return nearestAncestorWithActionBlock(forKey: &AssociatedObjectKeys.onClickDragged)
     }
     
-    func nearestAncestorWithActionBlock(forKey key: UnsafeRawPointer) -> SKNode? {
+    // MARK: - Computed positioning
+    
+    var onShouldComputeDefaultPositionForSceneSize: NodePositioningBlock? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedObjectKeys.computedDefaultPositionForSceneSize) as? NodePositioningBlock
+        }
+        set {
+            objc_setAssociatedObject(self,
+                                     &AssociatedObjectKeys.computedDefaultPositionForSceneSize,
+                                     newValue,
+                                     objc_AssociationPolicy.OBJC_ASSOCIATION_COPY)
+        }
+    }
+    
+    // MARK: - Utilities
+    
+    fileprivate func getAssociatedActionBlock(forKey key: UnsafeRawPointer) -> NodeActionBlock? {
+        return objc_getAssociatedObject(self, key) as? NodeActionBlock
+    }
+    
+    fileprivate func setAssociatedActionBlock(_ actionBlock: NodeActionBlock?, forKey key: UnsafeRawPointer) {
+        objc_setAssociatedObject(self,
+                                 key,
+                                 actionBlock,
+                                 objc_AssociationPolicy.OBJC_ASSOCIATION_COPY)
+    }
+    
+    fileprivate func nearestAncestorWithActionBlock(forKey key: UnsafeRawPointer) -> SKNode? {
         var aParent: SKNode? = parent
         while aParent != nil, aParent is SKScene == false  {
             if let _ = aParent?.getAssociatedActionBlock(forKey: key) {
@@ -67,16 +99,5 @@ extension SKNode {
         }
         
         return nil
-    }
-    
-    func getAssociatedActionBlock(forKey key: UnsafeRawPointer) -> NodeActionBlock? {
-        return objc_getAssociatedObject(self, key) as? NodeActionBlock
-    }
-    
-    func setAssociatedActionBlock(_ actionBlock: NodeActionBlock?, forKey key: UnsafeRawPointer) {
-        objc_setAssociatedObject(self,
-                                 key,
-                                 actionBlock,
-                                 objc_AssociationPolicy.OBJC_ASSOCIATION_COPY)
     }
 }

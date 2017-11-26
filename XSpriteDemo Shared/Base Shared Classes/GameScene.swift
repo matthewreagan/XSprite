@@ -18,6 +18,20 @@ class GameScene: SKScene {
         self.setUpScene()
     }
     
+    override func didChangeSize(_ oldSize: CGSize) {
+        var childrenToReposition: [SKNode] = children
+        let newSceneSize = size
+        
+        while childrenToReposition.count > 0 {
+            let child = childrenToReposition.popLast()!
+            if let computedDefaultPositionBlock = child.onShouldComputeDefaultPositionForSceneSize {
+                child.position = computedDefaultPositionBlock(newSceneSize)
+            }
+            
+            childrenToReposition.append(contentsOf: child.children)
+        }
+    }
+    
     // MARK: - Shared cross-platform click handling
     
     func handleClickDown(at location: CGPoint) -> Bool {

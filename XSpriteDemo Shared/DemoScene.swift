@@ -12,6 +12,7 @@ class DemoScene: GameScene {
     
     let bubbleNode = SKSpriteNode.init(imageNamed: "bubbleIcon")
     let potionNode = SKSpriteNode.init(imageNamed: "potionIcon")
+    let centerSquare = SKSpriteNode.init(color: SKColor.red, size: .init(width: 32.0, height: 32.0))
     let demoLabel = SKLabelNode()
     let infoLabel = SKLabelNode()
     var xDirection: CGFloat = 3.0
@@ -22,6 +23,12 @@ class DemoScene: GameScene {
     
     override func setUpScene() {
         super.setUpScene()
+        
+        centerSquare.alpha = 0.5
+        centerSquare.onShouldComputeDefaultPositionForSceneSize = {
+            size in
+            return CGPoint.init(x: size.width / 2.0, y: size.height / 2.0)
+        }
         
         demoLabel.fontName = "Helvetica"
         demoLabel.fontColor = SKColor.red
@@ -55,7 +62,7 @@ class DemoScene: GameScene {
         }
         
         bubbleNode.addChild(potionNode)
-        addChildren([bubbleNode, demoLabel, infoLabel])
+        addChildren([centerSquare, bubbleNode, demoLabel, infoLabel])
     }
     
     // MARK: - Click overrides
