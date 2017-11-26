@@ -25,25 +25,55 @@ class GameScene: SKScene {
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
     }
-}
-
-extension GameScene {
-    // Shared cross-platform click handling
     
-    func handleClickDown(at location: CGPoint) {
+    // MARK: - Shared cross-platform click handling
+    
+    func handleClickDown(at location: CGPoint) -> Bool {
         for aNode in nodes(at: location) {
             if let clickDownActionBlock = aNode.onClickDown {
                 clickDownActionBlock(aNode)
+                return true
+            } else {
+                if let nearestAncestorWithAction = aNode.nearestAncenstorOnClickDown() {
+                    nearestAncestorWithAction.onClickDown?(nearestAncestorWithAction)
+                    return true
+                }
             }
         }
+        
+        return false
     }
     
-    func handleClickUp(at location: CGPoint) {
+    func handleClickUp(at location: CGPoint) -> Bool {
         for aNode in nodes(at: location) {
             if let clickUpActionBlock = aNode.onClickUp {
                 clickUpActionBlock(aNode)
+                return true
+            } else {
+                if let nearestAncestorWithAction = aNode.nearestAncenstorOnClickUp() {
+                    nearestAncestorWithAction.onClickUp?(nearestAncestorWithAction)
+                    return true
+                }
             }
         }
+        
+        return false
+    }
+    
+    func handleClickDragged(at location: CGPoint) -> Bool {
+        for aNode in nodes(at: location) {
+            if let clickDraggedActionBlock = aNode.onClickDragged {
+                clickDraggedActionBlock(aNode)
+                return true
+            } else {
+                if let nearestAncestorWithAction = aNode.nearestAncenstorOnClickDragged() {
+                    nearestAncestorWithAction.onClickDragged?(nearestAncestorWithAction)
+                    return true
+                }
+            }
+        }
+        
+        return false
     }
 }
 
@@ -54,24 +84,28 @@ extension GameScene {
         override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
             for touch in touches {
                 let touchLocation = touch.location(in: self)
-                handleClickDown(at: touchLocation)
+                _ = handleClickDown(at: touchLocation)
             }
         }
         
         override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+            for touch in touches {
+                let touchLocation = touch.location(in: self)
+                _ = handleClickDragged(at: touchLocation)
+            }
         }
         
         override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
             for touch in touches {
                 let touchLocation = touch.location(in: self)
-                handleClickUp(at: touchLocation)
+                _ = handleClickUp(at: touchLocation)
             }
         }
         
         override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
             for touch in touches {
                 let touchLocation = touch.location(in: self)
-                handleClickUp(at: touchLocation)
+                _ = handleClickUp(at: touchLocation)
             }
         }
     }
@@ -81,15 +115,17 @@ extension GameScene {
         
         override func mouseDown(with event: NSEvent) {
             let touchLocation = event.location(in: self)
-            handleClickDown(at: touchLocation)
+            _ = handleClickDown(at: touchLocation)
         }
         
         override func mouseDragged(with event: NSEvent) {
+            let touchLocation = event.location(in: self)
+            _ = handleClickDragged(at: touchLocation)
         }
         
         override func mouseUp(with event: NSEvent) {
             let touchLocation = event.location(in: self)
-            handleClickUp(at: touchLocation)
+            _ = handleClickUp(at: touchLocation)
         }
     }
 #endif

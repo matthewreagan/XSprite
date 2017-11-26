@@ -10,45 +10,104 @@ import SpriteKit
 
 class DemoScene: GameScene {
     
-    let demoNode = SKSpriteNode.init(imageNamed: "potionIcon")
+    let bubbleNode = SKSpriteNode.init(imageNamed: "bubbleIcon")
+    let potionNode = SKSpriteNode.init(imageNamed: "potionIcon")
     let demoLabel = SKLabelNode()
-    var xDirection: CGFloat = 4.0
-    var yDirection: CGFloat = 4.0
+    let infoLabel = SKLabelNode()
+    var xDirection: CGFloat = 3.0
+    var yDirection: CGFloat = 3.0
+    let bubbleStart = CGPoint(x: 128, y: 128)
     
     // MARK: - Setup
     
     override func setUpScene() {
         super.setUpScene()
         
-        self.addChild(demoNode)
-        self.addChild(demoLabel)
         demoLabel.fontName = "Helvetica"
         demoLabel.fontColor = SKColor.red
         demoLabel.fontSize = 15.0
         demoLabel.horizontalAlignmentMode = .left
-        demoLabel.position = CGPoint(x: 20.0, y: 20.0)
-        demoNode.position = CGPoint(x: 100, y: 100)
+        demoLabel.verticalAlignmentMode = .bottom
+        demoLabel.position = CGPoint(x: 20.0, y: 25.0)
         
-        demoNode.size = .init(width: 64.0, height: 64.0)
-        demoNode.texture?.filteringMode = .nearest
-        demoNode.run(.repeatForever(.rotate(byAngle: 2 * CGFloat.pi, duration: 3.0)))
+        infoLabel.fontName = "Helvetica"
+        infoLabel.fontColor = SKColor.gray
+        infoLabel.fontSize = 13.0
+        infoLabel.horizontalAlignmentMode = .left
+        infoLabel.verticalAlignmentMode = .bottom
+        infoLabel.position = CGPoint(x: 20.0, y: 10.0)
+        infoLabel.text = "Try clicking the bubble or potion to see relationship between parent/child click actions"
         
-        demoNode.onClickDown = {
+        bubbleNode.position = bubbleStart
+        
+        potionNode.size = .init(width: 64.0, height: 64.0)
+        potionNode.texture?.filteringMode = .nearest
+        potionNode.run(.repeatForever(.rotate(byAngle: 2 * CGFloat.pi, duration: 3.0)))
+        potionNode.onClickDown = {
             let spinnyAction = SKAction.rotate(byAngle: 2 * CGFloat.pi * 2, duration: 0.35)
             spinnyAction.timingMode = .easeInEaseOut
             $0.run(spinnyAction)
         }
+        
+        bubbleNode.onClickDown = {
+            let zoomAction = SKAction.sequence([.scale(to: 1.5, duration: 0.1), .scale(to: 1.0, duration: 0.1)])
+            $0.run(zoomAction)
+        }
+        
+        addChild(bubbleNode)
+        bubbleNode.addChild(potionNode)
+        addChild(demoLabel)
+        addChild(infoLabel)
+    }
+    
+    // MARK: - Click overrides
+    
+    override func handleClickDown(at location: CGPoint) -> Bool {
+        
+        // Allow default click handlers to run if needed, otherwise perform our custom click handling
+        if !super.handleClickDown(at: location) {
+            createClickCircle(at: location)
+        }
+        
+        return false
+    }
+    
+    override func handleClickDragged(at location: CGPoint) -> Bool {
+        
+        // Allow default click handlers to run if needed, otherwise perform our custom click handling
+        if !super.handleClickDragged(at: location) {
+            createClickCircle(at: location)
+        }
+        
+        return false
+    }
+    
+    func createClickCircle(at location: CGPoint) {
+        let circleSize = 48.0
+        let clickCircle = SKShapeNode.init(ellipseIn: .init(x: -circleSize/2.0, y: -circleSize/2.0, width: circleSize, height: circleSize))
+        clickCircle.fillColor = SKColor.clear
+        clickCircle.strokeColor = SKColor.magenta
+        clickCircle.lineWidth = 2.0
+        
+        clickCircle.run(.sequence([.group([.scale(to: 1.5, duration: 0.3),
+                                           .fadeOut(withDuration: 0.3)]),
+                                   .removeFromParent()]))
+        clickCircle.position = location
+        
+        addChild(clickCircle)
     }
     
     // MARK: - Logic
     
     override func update(_ currentTime: TimeInterval) {
-        // For simple demo
-        demoNode.position = CGPoint.init(x: demoNode.position.x + xDirection, y: demoNode.position.y + yDirection)
-        let maxX = demoNode.position.x + demoNode.size.width / 2.0
-        let maxY = demoNode.position.y + demoNode.size.height / 2.0
-        let minX = demoNode.position.x - demoNode.size.width / 2.0
-        let minY = demoNode.position.y - demoNode.size.height / 2.0
+        
+        let bouncingNode = bubbleNode
+        
+        bouncingNode.position = CGPoint.init(x: bouncingNode.position.x + xDirection, y: bouncingNode.position.y + yDirection)
+        let maxX = bouncingNode.position.x + bouncingNode.size.width / 2.0
+        let maxY = bouncingNode.position.y + bouncingNode.size.height / 2.0
+        let minX = bouncingNode.position.x - bouncingNode.size.width / 2.0
+        let minY = bouncingNode.position.y - bouncingNode.size.height / 2.0
         
         if maxX >= scene!.size.width || minX <= 0.0 {
             xDirection *= -1.0
@@ -64,7 +123,7 @@ class DemoScene: GameScene {
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
         
-        demoNode.position = .init(x: 100.0, y: 100.0)
+        bubbleNode.position = bubbleStart
         demoLabel.text = "Scene size: \(Int(self.size.width)), \(Int(self.size.height))"
     }
 }

@@ -13,6 +13,7 @@ typealias NodeActionBlock = (SKNode) -> Void
 struct AssociatedObjectKeys {
     static var onClickDown: UInt8 = 0
     static var onClickUp: UInt8 = 0
+    static var onClickDragged: UInt8 = 0
 }
 
 extension SKNode {
@@ -25,6 +26,10 @@ extension SKNode {
         }
     }
     
+    func nearestAncenstorOnClickDown() -> SKNode? {
+        return nearestAncestorWithActionBlock(forKey: &AssociatedObjectKeys.onClickDown)
+    }
+    
     var onClickUp: NodeActionBlock? {
         get {
             return getAssociatedActionBlock(forKey: &AssociatedObjectKeys.onClickUp)
@@ -32,6 +37,36 @@ extension SKNode {
         set {
             setAssociatedActionBlock(newValue, forKey: &AssociatedObjectKeys.onClickUp)
         }
+    }
+    
+    func nearestAncenstorOnClickUp() -> SKNode? {
+        return nearestAncestorWithActionBlock(forKey: &AssociatedObjectKeys.onClickUp)
+    }
+    
+    var onClickDragged: NodeActionBlock? {
+        get {
+            return getAssociatedActionBlock(forKey: &AssociatedObjectKeys.onClickDragged)
+        }
+        set {
+            setAssociatedActionBlock(newValue, forKey: &AssociatedObjectKeys.onClickDragged)
+        }
+    }
+    
+    func nearestAncenstorOnClickDragged() -> SKNode? {
+        return nearestAncestorWithActionBlock(forKey: &AssociatedObjectKeys.onClickDragged)
+    }
+    
+    func nearestAncestorWithActionBlock(forKey key: UnsafeRawPointer) -> SKNode? {
+        var aParent: SKNode? = parent
+        while aParent != nil, aParent is SKScene == false  {
+            if let _ = aParent?.getAssociatedActionBlock(forKey: key) {
+                return aParent
+            }
+            
+            aParent = aParent?.parent
+        }
+        
+        return nil
     }
     
     func getAssociatedActionBlock(forKey key: UnsafeRawPointer) -> NodeActionBlock? {
