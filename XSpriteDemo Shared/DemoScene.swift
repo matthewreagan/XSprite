@@ -45,22 +45,23 @@ class DemoScene: GameScene {
         buttonLabel.position = .init(x: 0.0, y: -7.0)
         
         woodButton.computedDefaultPositionForSceneSize = {
+            [unowned self]
             size in
+            self.moveDemoWoodButton()
             return CGPoint(x: round(size.width / 2.0) + 25.0, y: round(size.height / 2.0) - 100)
         }
-        
         weak var weakWoodButton: SKSpriteNode? = woodButton
         woodButton.onClickDown = {
             $0.run(.scale(to: 0.9, duration: 0.02))
             weakWoodButton?.colorBlendFactor = 0.2
             weakWoodButton?.color = SKColor.black
         }
-        
         woodButton.onClickUp = {
             $0.run(.scale(to: 1.0, duration: 0.02))
             weakWoodButton?.colorBlendFactor = 0.0
             weakWoodButton?.color = SKColor.white
         }
+        moveDemoWoodButton()
         
         demoLabel.fontName = "Helvetica"
         demoLabel.fontColor = SKColor.red
@@ -96,12 +97,15 @@ class DemoScene: GameScene {
             $0.run(zoomAction)
         }
         
-        woodButton.run(.repeatForever(.sequence([SKAction.moveBy(x: -50, y: 0.0, duration: 1.0).withTimingMode(.easeInEaseOut),
-                                                 SKAction.moveBy(x: 50, y: 0.0, duration: 1.0).withTimingMode(.easeInEaseOut)])))
-        
         woodButton.addChild(buttonLabel)
         bubbleNode.addChild(potionNode)
         addChildren([centerSquare, bubbleNode, demoLabel, infoLabel, woodButton])
+    }
+    
+    func moveDemoWoodButton() {
+        woodButton.removeAllActions()
+        woodButton.run(.repeatForever(.sequence([SKAction.moveBy(x: -50, y: 0.0, duration: 1.0).withTimingMode(.easeInEaseOut),
+                                                 SKAction.moveBy(x: 50, y: 0.0, duration: 1.0).withTimingMode(.easeInEaseOut)])))
     }
     
     // MARK: - Click overrides
