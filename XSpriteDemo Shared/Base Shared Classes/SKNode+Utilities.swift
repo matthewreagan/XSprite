@@ -20,6 +20,15 @@ struct AssociatedObjectKeys {
 
 extension SKNode {
     
+    // MARK: - Positioning
+    
+    func centerInScene() {
+        if let myScene = scene {
+            let sceneSize = myScene.size
+            position = .init(x: round(sceneSize.width / 2.0), y: round(sceneSize.height / 2.0))
+        }
+    }
+    
     // MARK: - Click handlers
     
     var onClickDown: NodeActionBlock? {
