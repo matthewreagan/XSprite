@@ -10,6 +10,8 @@ import SpriteKit
 
 class GameScene: SKScene {
     
+    var currentNodeTrackingClick: SKNode? = nil
+    
     func setUpScene() {
         self.scaleMode = .aspectFill
     }
@@ -39,10 +41,12 @@ class GameScene: SKScene {
         for aNode in nodes(at: location) {
             if let clickDownActionBlock = aNode.onClickDown {
                 clickDownActionBlock(aNode)
+                currentNodeTrackingClick = aNode
                 return true
             } else {
                 if let nearestAncestorWithAction = aNode.nearestAncenstorOnClickDown() {
                     nearestAncestorWithAction.onClickDown?(nearestAncestorWithAction)
+                    currentNodeTrackingClick = nearestAncestorWithAction
                     return true
                 }
             }
@@ -52,14 +56,21 @@ class GameScene: SKScene {
     }
     
     func handleClickUp(at location: CGPoint) -> Bool {
-        for aNode in nodes(at: location) {
-            if let clickUpActionBlock = aNode.onClickUp {
-                clickUpActionBlock(aNode)
-                return true
-            } else {
-                if let nearestAncestorWithAction = aNode.nearestAncenstorOnClickUp() {
-                    nearestAncestorWithAction.onClickUp?(nearestAncestorWithAction)
+        
+        if let clickTrackingNode = currentNodeTrackingClick {
+            clickTrackingNode.onClickUp?(clickTrackingNode)
+            currentNodeTrackingClick = nil
+            return true
+        } else {
+            for aNode in nodes(at: location) {
+                if let clickUpActionBlock = aNode.onClickUp {
+                    clickUpActionBlock(aNode)
                     return true
+                } else {
+                    if let nearestAncestorWithAction = aNode.nearestAncenstorOnClickUp() {
+                        nearestAncestorWithAction.onClickUp?(nearestAncestorWithAction)
+                        return true
+                    }
                 }
             }
         }
@@ -68,14 +79,24 @@ class GameScene: SKScene {
     }
     
     func handleClickDragged(at location: CGPoint) -> Bool {
-        for aNode in nodes(at: location) {
-            if let clickDraggedActionBlock = aNode.onClickDragged {
-                clickDraggedActionBlock(aNode)
-                return true
-            } else {
-                if let nearestAncestorWithAction = aNode.nearestAncenstorOnClickDragged() {
-                    nearestAncestorWithAction.onClickDragged?(nearestAncestorWithAction)
+        let nodesAtLocation =  nodes(at: location)
+        
+        if let clickTrackingNode = currentNodeTrackingClick {
+            if nodesAtLocation.contains(clickTrackingNode) {
+                clickTrackingNode.onClickDragged?(clickTrackingNode)
+            }
+            
+            return true
+        } else {
+            for aNode in nodesAtLocation {
+                if let clickDraggedActionBlock = aNode.onClickDragged {
+                    clickDraggedActionBlock(aNode)
                     return true
+                } else {
+                    if let nearestAncestorWithAction = aNode.nearestAncenstorOnClickDragged() {
+                        nearestAncestorWithAction.onClickDragged?(nearestAncestorWithAction)
+                        return true
+                    }
                 }
             }
         }
