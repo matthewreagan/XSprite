@@ -14,11 +14,13 @@ let bubbleStart = CGPoint(x: 128, y: 128)
 
 class DemoScene: GameScene {
     
-    let bubbleNode = SKSpriteNode.init(imageNamed: "bubbleIcon")
-    let potionNode = SKSpriteNode.init(imageNamed: "potionIcon")
-    let centerSquare = SKSpriteNode.init(color: SKColor.red, size: .init(width: 32.0, height: 32.0))
+    let bubbleNode = SKSpriteNode(imageNamed: "bubbleIcon")
+    let potionNode = SKSpriteNode(imageNamed: "potionIcon")
+    let centerSquare = SKSpriteNode(color: SKColor.red, size: .init(width: 10.0, height: 10.0))
+    let woodButton = SKSpriteNode(imageNamed: "woodButton")
     let demoLabel = SKLabelNode()
     let infoLabel = SKLabelNode()
+    let buttonLabel = SKLabelNode()
     
     // MARK: - Setup
     
@@ -28,7 +30,36 @@ class DemoScene: GameScene {
         centerSquare.alpha = 0.5
         centerSquare.computedDefaultPositionForSceneSize = {
             size in
-            return CGPoint.init(x: size.width / 2.0, y: size.height / 2.0)
+            return CGPoint(x: size.width / 2.0, y: size.height / 2.0)
+        }
+        
+        buttonLabel.fontName = "Helvetica Bold"
+        buttonLabel.fontColor = SKColor.white
+        buttonLabel.fontSize = 17.0
+        buttonLabel.horizontalAlignmentMode = .center
+        buttonLabel.verticalAlignmentMode = .bottom
+        buttonLabel.position = CGPoint(x: 0.0, y: 0.0)
+        buttonLabel.text = "Click me! I track the mouse!"
+        buttonLabel.alpha = 0.75
+        buttonLabel.blendMode = .add
+        buttonLabel.position = .init(x: 0.0, y: -7.0)
+        
+        woodButton.computedDefaultPositionForSceneSize = {
+            size in
+            return CGPoint(x: round(size.width / 2.0) + 25.0, y: round(size.height / 2.0) - 100)
+        }
+        
+        weak var weakWoodButton: SKSpriteNode? = woodButton
+        woodButton.onClickDown = {
+            $0.run(.scale(to: 0.9, duration: 0.02))
+            weakWoodButton?.colorBlendFactor = 0.2
+            weakWoodButton?.color = SKColor.black
+        }
+        
+        woodButton.onClickUp = {
+            $0.run(.scale(to: 1.0, duration: 0.02))
+            weakWoodButton?.colorBlendFactor = 0.0
+            weakWoodButton?.color = SKColor.white
         }
         
         demoLabel.fontName = "Helvetica"
@@ -65,8 +96,12 @@ class DemoScene: GameScene {
             $0.run(zoomAction)
         }
         
+        woodButton.run(.repeatForever(.sequence([SKAction.moveBy(x: -50, y: 0.0, duration: 1.0).withTimingMode(.easeInEaseOut),
+                                                 SKAction.moveBy(x: 50, y: 0.0, duration: 1.0).withTimingMode(.easeInEaseOut)])))
+        
+        woodButton.addChild(buttonLabel)
         bubbleNode.addChild(potionNode)
-        addChildren([centerSquare, bubbleNode, demoLabel, infoLabel])
+        addChildren([centerSquare, bubbleNode, demoLabel, infoLabel, woodButton])
     }
     
     // MARK: - Click overrides
@@ -97,6 +132,7 @@ class DemoScene: GameScene {
         clickCircle.fillColor = SKColor.clear
         clickCircle.strokeColor = SKColor.magenta
         clickCircle.lineWidth = 2.0
+        clickCircle.zPosition = -1.0
         
         clickCircle.run(.sequence([.group([.scale(to: 1.5, duration: 0.3),
                                            .fadeOut(withDuration: 0.3)]),
