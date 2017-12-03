@@ -110,6 +110,7 @@ class DemoScene: GameScene {
         let bubble = SKShapeNode(ellipseOf: CGSize(width:10.0, height:10.0))
         bubble.lineWidth = 1.0
         bubble.fillColor = SKColor.green
+        bubble.isHidden = true
         return bubble
     }
     
