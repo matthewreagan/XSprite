@@ -21,6 +21,9 @@ class DemoScene: GameScene {
     let demoLabel = SKLabelNode()
     let infoLabel = SKLabelNode()
     let buttonLabel = SKLabelNode()
+    let demoLineDragStartBubble = DemoScene.createDemoLineBubble()
+    let demoLineDragEndBubble = DemoScene.createDemoLineBubble()
+    var demoLine: SKShapeNode? = nil
     
     // MARK: - Setup
     
@@ -60,6 +63,7 @@ class DemoScene: GameScene {
             $0.run(.scale(to: 1.0, duration: 0.02))
             weakWoodButton?.colorBlendFactor = 0.0
             weakWoodButton?.color = SKColor.white
+            print("Clicked!")
         }
         moveDemoWoodButton()
         
@@ -99,7 +103,39 @@ class DemoScene: GameScene {
         
         woodButton.addChild(buttonLabel)
         bubbleNode.addChild(potionNode)
-        addChildren([centerSquare, bubbleNode, demoLabel, infoLabel, woodButton])
+        addChildren([centerSquare, demoLineDragStartBubble, demoLineDragEndBubble, bubbleNode, demoLabel, infoLabel, woodButton])
+    }
+    
+    static func createDemoLineBubble() -> SKShapeNode {
+        let bubble = SKShapeNode(ellipseOf: CGSize(width:10.0, height:10.0))
+        bubble.lineWidth = 1.0
+        bubble.fillColor = SKColor.green
+        return bubble
+    }
+    
+    func updateDemoLineTo(start: CGPoint, end: CGPoint) {
+        demoLineDragStartBubble.isHidden = false
+        demoLineDragEndBubble.isHidden = false
+        demoLineDragStartBubble.position = start
+        demoLineDragEndBubble.position = end
+        
+        demoLine?.removeFromParent()
+        demoLine = SKShapeNode()
+        demoLine?.zPosition = -1.0
+        let path: CGMutablePath = CGMutablePath()
+        path.move(to: start)
+        path.addLine(to: end, transform: .identity)
+        demoLine!.path = path
+        demoLine!.strokeColor = SKColor.green
+        demoLine!.lineWidth = 3.0
+        addChild(demoLine!)
+    }
+    
+    func hideDemoLine() {
+        demoLineDragStartBubble.isHidden = true
+        demoLineDragEndBubble.isHidden = true
+        demoLine?.removeFromParent()
+        demoLine = nil
     }
     
     func moveDemoWoodButton() {
@@ -110,28 +146,41 @@ class DemoScene: GameScene {
     
     // MARK: - Click overrides
     
-    override func handleClickDown(at location: CGPoint) -> Bool {
+    override func handleClickDown(_ clickEvent: ClickEvent) -> Bool {
         
         // Allow default click handlers to run if needed, otherwise perform our custom click handling
-        if !super.handleClickDown(at: location) {
-            createClickCircle(at: location)
+        if !super.handleClickDown(clickEvent) {
+            createClickCircle(at: clickEvent.location)
         }
         
         return false
     }
     
-    override func handleClickDragged(at location: CGPoint) -> Bool {
+    override func handleClickDragged(_ clickEvent: ClickEvent) -> Bool {
         
         // Allow default click handlers to run if needed, otherwise perform our custom click handling
-        if !super.handleClickDragged(at: location) {
-            createClickCircle(at: location)
+        if !super.handleClickDragged(clickEvent) {
+            createClickCircle(at: clickEvent.location)
+            
+            updateDemoLineTo(start: clickEvent.startLocation, end: clickEvent.location)
         }
+        
+        return false
+    }
+    
+    override func handleClickUp(_ clickEvent: ClickEvent) -> Bool {
+        
+        // Allow default click handlers to run if needed, otherwise perform our custom click handling
+        
+        _ = super.handleClickUp(clickEvent)
+        
+        hideDemoLine()
         
         return false
     }
     
     func createClickCircle(at location: CGPoint) {
-        let circleSize = 48.0
+        let circleSize = 32.0
         let clickCircle = SKShapeNode.init(ellipseIn: .init(x: -circleSize/2.0, y: -circleSize/2.0, width: circleSize, height: circleSize))
         clickCircle.fillColor = SKColor.clear
         clickCircle.strokeColor = SKColor.magenta

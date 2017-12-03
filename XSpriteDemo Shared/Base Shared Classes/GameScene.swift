@@ -8,9 +8,19 @@
 
 import SpriteKit
 
+struct ClickEvent {
+    let location: CGPoint
+    let startLocation: CGPoint
+}
+
 class GameScene: SKScene {
     
     var currentNodeTrackingClick: SKNode? = nil
+    var currentClickStart: CGPoint = .zero
+    
+    #if os(iOS)
+    var currentTouch: UITouch? = nil
+    #endif
     
     func setUpScene() {
         self.scaleMode = .aspectFill
@@ -37,8 +47,8 @@ class GameScene: SKScene {
     
     // MARK: - Shared cross-platform click handling
     
-    func handleClickDown(at location: CGPoint) -> Bool {
-        for aNode in nodes(at: location) {
+    func handleClickDown(_ clickEvent: ClickEvent) -> Bool {
+        for aNode in nodes(at: clickEvent.location) {
             if let clickDownActionBlock = aNode.onClickDown {
                 clickDownActionBlock(aNode)
                 currentNodeTrackingClick = aNode
@@ -55,14 +65,14 @@ class GameScene: SKScene {
         return false
     }
     
-    func handleClickUp(at location: CGPoint) -> Bool {
+    func handleClickUp(_ clickEvent: ClickEvent) -> Bool {
         
         if let clickTrackingNode = currentNodeTrackingClick {
             clickTrackingNode.onClickUp?(clickTrackingNode)
             currentNodeTrackingClick = nil
             return true
         } else {
-            for aNode in nodes(at: location) {
+            for aNode in nodes(at: clickEvent.location) {
                 if let clickUpActionBlock = aNode.onClickUp {
                     clickUpActionBlock(aNode)
                     return true
@@ -78,8 +88,8 @@ class GameScene: SKScene {
         return false
     }
     
-    func handleClickDragged(at location: CGPoint) -> Bool {
-        let nodesAtLocation =  nodes(at: location)
+    func handleClickDragged(_ clickEvent: ClickEvent) -> Bool {
+        let nodesAtLocation =  nodes(at: clickEvent.location)
         
         if let clickTrackingNode = currentNodeTrackingClick {
             if nodesAtLocation.contains(clickTrackingNode) {
@@ -110,30 +120,38 @@ class GameScene: SKScene {
     extension GameScene {
         
         override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-            for touch in touches {
-                let touchLocation = touch.location(in: self)
-                _ = handleClickDown(at: touchLocation)
+            if currentTouch == nil {
+                currentTouch = touches.first!
+                let location = currentTouch!.location(in: self)
+                currentClickStart = location
+                let clickEvent = ClickEvent(location: location, startLocation: currentClickStart)
+                _ = handleClickDown(clickEvent)
             }
         }
         
         override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-            for touch in touches {
-                let touchLocation = touch.location(in: self)
-                _ = handleClickDragged(at: touchLocation)
+            if currentTouch != nil, touches.contains(currentTouch!) {
+                let location = currentTouch!.location(in: self)
+                let clickEvent = ClickEvent(location: location, startLocation: currentClickStart)
+                _ = handleClickDragged(clickEvent)
             }
         }
         
         override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-            for touch in touches {
-                let touchLocation = touch.location(in: self)
-                _ = handleClickUp(at: touchLocation)
-            }
+            handleTouchesEndedOrCancelled(touches)
         }
         
         override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-            for touch in touches {
-                let touchLocation = touch.location(in: self)
-                _ = handleClickUp(at: touchLocation)
+            handleTouchesEndedOrCancelled(touches)
+        }
+        
+        func handleTouchesEndedOrCancelled(_ touches: Set<UITouch>) {
+            if currentTouch != nil, touches.contains(currentTouch!) {
+                let location = currentTouch!.location(in: self)
+                let clickEvent = ClickEvent(location: location, startLocation: currentClickStart)
+                _ = handleClickUp(clickEvent)
+                currentClickStart = .zero
+                currentTouch = nil
             }
         }
     }
@@ -142,18 +160,23 @@ class GameScene: SKScene {
     extension GameScene {
         
         override func mouseDown(with event: NSEvent) {
-            let touchLocation = event.location(in: self)
-            _ = handleClickDown(at: touchLocation)
+            let location = event.location(in: self)
+            currentClickStart = location
+            let clickEvent = ClickEvent(location: location, startLocation: currentClickStart)
+            _ = handleClickDown(clickEvent)
         }
         
         override func mouseDragged(with event: NSEvent) {
-            let touchLocation = event.location(in: self)
-            _ = handleClickDragged(at: touchLocation)
+            let location = event.location(in: self)
+            let clickEvent = ClickEvent(location: location, startLocation: currentClickStart)
+            _ = handleClickDragged(clickEvent)
         }
         
         override func mouseUp(with event: NSEvent) {
-            let touchLocation = event.location(in: self)
-            _ = handleClickUp(at: touchLocation)
+            let location = event.location(in: self)
+            let clickEvent = ClickEvent(location: location, startLocation: currentClickStart)
+            _ = handleClickUp(clickEvent)
+            currentClickStart = .zero
         }
     }
 #endif
