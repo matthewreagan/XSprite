@@ -54,17 +54,27 @@ class DemoScene: GameScene {
             return CGPoint(x: round(size.width / 2.0) + 25.0, y: round(size.height / 2.0) - 100)
         }
         weak var weakWoodButton: SKSpriteNode? = woodButton
-        woodButton.onClickDown = {
-            $0.run(.scale(to: 0.9, duration: 0.02))
+        
+        func handleWoodButtonClickUpOrExited(_ node: SKNode) {
+            weakWoodButton?.run(.scale(to: 1.0, duration: 0.02))
+            weakWoodButton?.colorBlendFactor = 0.0
+            weakWoodButton?.color = SKColor.white
+        }
+        
+        func handleWoodButtonClickDownOrEntrered(_ node: SKNode) {
+            weakWoodButton?.run(.scale(to: 0.9, duration: 0.02))
             weakWoodButton?.colorBlendFactor = 0.2
             weakWoodButton?.color = SKColor.black
         }
+        
+        woodButton.onClickDown = handleWoodButtonClickDownOrEntrered(_:)
+        woodButton.onClickDragEntered = handleWoodButtonClickDownOrEntrered(_:)
+        woodButton.onClickDragExited = handleWoodButtonClickUpOrExited(_:)
         woodButton.onClickUp = {
-            $0.run(.scale(to: 1.0, duration: 0.02))
-            weakWoodButton?.colorBlendFactor = 0.0
-            weakWoodButton?.color = SKColor.white
+            handleWoodButtonClickUpOrExited($0)
             print("Clicked!")
         }
+        
         moveDemoWoodButton()
         
         demoLabel.fontName = "Helvetica"

@@ -15,6 +15,8 @@ struct AssociatedObjectKeys {
     static var onClickDown: UInt8 = 0
     static var onClickUp: UInt8 = 0
     static var onClickDragged: UInt8 = 0
+    static var onClickDragExited: UInt8 = 0
+    static var onClickDragEntered: UInt8 = 0
     static var computedDefaultPositionForSceneSize: UInt8 = 0
 }
 
@@ -68,6 +70,24 @@ extension SKNode {
     
     func nearestAncenstorOnClickDragged() -> SKNode? {
         return nearestAncestorWithActionBlock(forKey: &AssociatedObjectKeys.onClickDragged)
+    }
+    
+    var onClickDragExited: NodeActionBlock? {
+        get {
+            return getAssociatedActionBlock(forKey: &AssociatedObjectKeys.onClickDragExited)
+        }
+        set {
+            setAssociatedActionBlock(newValue, forKey: &AssociatedObjectKeys.onClickDragExited)
+        }
+    }
+    
+    var onClickDragEntered: NodeActionBlock? {
+        get {
+            return getAssociatedActionBlock(forKey: &AssociatedObjectKeys.onClickDragEntered)
+        }
+        set {
+            setAssociatedActionBlock(newValue, forKey: &AssociatedObjectKeys.onClickDragEntered)
+        }
     }
     
     // MARK: - Computed positioning

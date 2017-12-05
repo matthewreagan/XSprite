@@ -16,6 +16,7 @@ struct ClickEvent {
 class GameScene: SKScene {
     
     var currentNodeTrackingClick: SKNode? = nil
+    var clickHasEnteredCurrentNodeTrackingClick: Bool = false
     var currentClickStart: CGPoint = .zero
     
     #if os(iOS)
@@ -52,11 +53,13 @@ class GameScene: SKScene {
             if let clickDownActionBlock = aNode.onClickDown {
                 clickDownActionBlock(aNode)
                 currentNodeTrackingClick = aNode
+                clickHasEnteredCurrentNodeTrackingClick = true
                 return true
             } else {
                 if let nearestAncestorWithAction = aNode.nearestAncenstorOnClickDown() {
                     nearestAncestorWithAction.onClickDown?(nearestAncestorWithAction)
                     currentNodeTrackingClick = nearestAncestorWithAction
+                    clickHasEnteredCurrentNodeTrackingClick = true
                     return true
                 }
             }
@@ -68,7 +71,10 @@ class GameScene: SKScene {
     func handleClickUp(_ clickEvent: ClickEvent) -> Bool {
         
         if let clickTrackingNode = currentNodeTrackingClick {
-            clickTrackingNode.onClickUp?(clickTrackingNode)
+            if clickHasEnteredCurrentNodeTrackingClick {
+                clickTrackingNode.onClickUp?(clickTrackingNode)
+                clickHasEnteredCurrentNodeTrackingClick = false
+            }
             currentNodeTrackingClick = nil
             return true
         } else {
@@ -93,7 +99,17 @@ class GameScene: SKScene {
         
         if let clickTrackingNode = currentNodeTrackingClick {
             if nodesAtLocation.contains(clickTrackingNode) {
-                clickTrackingNode.onClickDragged?(clickTrackingNode)
+                if !clickHasEnteredCurrentNodeTrackingClick {
+                    clickHasEnteredCurrentNodeTrackingClick = true
+                    clickTrackingNode.onClickDragEntered?(clickTrackingNode)
+                } else {
+                    clickTrackingNode.onClickDragged?(clickTrackingNode)
+                }
+            } else {
+                if clickHasEnteredCurrentNodeTrackingClick {
+                    clickHasEnteredCurrentNodeTrackingClick = false
+                    clickTrackingNode.onClickDragExited?(clickTrackingNode)
+                }
             }
             
             return true
